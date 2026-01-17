@@ -228,14 +228,14 @@
             font-size: 1.5rem;
             font-weight: 700;
             color: white;
-            height: 120px;
+            height: 60px;
         }
 
         .nav-brand img {
-            height: 120px;
+            height: 60px;
             width: auto;
             display: block;
-            margin-top: 8px;
+            margin-top: 4px;
         }
 
         .nav-brand .luna-mini {
@@ -1384,6 +1384,181 @@
             pointer-events: none;
         }
 
+        /* --- Diagnosis Modal --- */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 11, 15, 0.9);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .diagnosis-modal {
+            width: 100%;
+            max-width: 600px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            padding: 40px;
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .diagnosis-modal {
+            transform: translateY(0);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: white;
+        }
+
+        .diagnosis-progress {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .diagnosis-bar {
+            height: 100%;
+            background: var(--luna-primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .diagnosis-step {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .diagnosis-step.active {
+            display: block;
+        }
+
+        .diagnosis-question {
+            font-size: 1.5rem;
+            margin-bottom: 24px;
+            font-family: 'Space Grotesk', sans-serif;
+            text-align: center;
+        }
+
+        .diagnosis-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .diagnosis-option {
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .diagnosis-option:hover {
+            background: rgba(var(--luna-glow), 0.1);
+            border-color: var(--luna-primary);
+        }
+
+        .diagnosis-result {
+            text-align: center;
+        }
+
+        .persona-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 20px;
+            color: var(--accent-purple);
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+
+        .persona-title {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--luna-primary), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 24px;
+            font-weight: 700;
+        }
+
+        .diagnosis-leak {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 16px;
+            border-radius: 12px;
+            color: #fca5a5;
+            margin-bottom: 24px;
+            font-size: 0.95rem;
+        }
+
+        .fix-plan {
+            text-align: left;
+            margin-bottom: 30px;
+        }
+
+        .fix-step {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+        }
+
+        .fix-num {
+            width: 24px;
+            height: 24px;
+            background: var(--luna-primary);
+            color: var(--bg-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
     </style>
 </head>
 <body>
@@ -1392,7 +1567,7 @@
     <nav>
         <div class="container">
             <div class="nav-brand">
-                <img src="232666450_padded_logo.png" alt="ToMoon">
+                <img src="White%20logo%20-%20no%20background.svg" alt="ToMoon">
             </div>
             <div class="nav-links">
                 <a href="#features">Features</a>
@@ -1417,10 +1592,15 @@
                     <!-- UPDATED: Changed "enforce" to "reinforce" and clarified assistance role -->
                     <p>ToMoon is your AI-powered trading assistant. Define your edge, set your own risk parameters, and let Luna AI reinforce your discipline through real-time alerts.</p>
                     <div class="hero-actions">
-                        <button class="btn btn-luna">Start Free Trial</button>
-                        <button class="btn btn-ghost">
-                            <span>▶</span> Watch Demo
+                        <button class="btn btn-luna" onclick="openDiagnosis()">
+                            Begin 30-sec Diagnosis
                         </button>
+                        <a href="#video-section" class="btn btn-ghost">
+                            <span>▶</span> Platform Walkthrough
+                        </a>
+                    </div>
+                    <div style="margin-top: -30px; margin-bottom: 40px;">
+                        <a href="#basics" style="color: var(--text-muted); font-size: 0.9rem; text-decoration: underline; text-underline-offset: 4px;">Or browse the Basics Survival Kit</a>
                     </div>
                     <div class="hero-stats">
                         <div class="hero-stat">
@@ -1707,7 +1887,7 @@
     </section>
 
     <!-- Video Section -->
-    <section class="video-section">
+    <section class="video-section" id="video-section">
         <div class="container">
             <div class="section-header">
                 <span class="section-badge">Platform Walkthrough</span>
@@ -1876,6 +2056,20 @@
             </div>
         </div>
     </footer>
+
+    <!-- Diagnosis Modal -->
+    <div class="modal-overlay" id="diagnosis-overlay">
+        <div class="diagnosis-modal">
+            <button class="modal-close" onclick="closeDiagnosis()">×</button>
+            <div class="diagnosis-progress">
+                <div class="diagnosis-bar" id="diagnosis-bar"></div>
+            </div>
+
+            <div id="diagnosis-container">
+                <!-- Questions injected here by JS -->
+            </div>
+        </div>
+    </div>
 
     <script>
         // FAQ Toggle
@@ -2091,6 +2285,239 @@
         
         const newsSection = document.getElementById('news-demo-section');
         if(newsSection) newsObserver.observe(newsSection);
+
+        /* --- Diagnosis Logic --- */
+        const questions = [
+            {
+                id: 1,
+                text: "How do you usually lose the most?",
+                options: [
+                    { text: "Holding too long / moving stop", type: "fear" },
+                    { text: "Chasing prices impulsively", type: "impulsive" },
+                    { text: "Revenge trading after losses", type: "tilt" },
+                    { text: "Fear of missing profit", type: "fomo" }
+                ]
+            },
+            {
+                id: 2,
+                text: "What do you lack most?",
+                options: [
+                    { text: "Risk limits" },
+                    { text: "Clear strategy structure" },
+                    { text: "Disciplined execution" }
+                ]
+            },
+            {
+                id: 3,
+                text: "Your trading experience:",
+                options: [
+                    { text: "New trader" },
+                    { text: "Have experience but not stable" },
+                    { text: "Experienced, but in drawdown" }
+                ]
+            },
+            {
+                id: 4,
+                text: "Your trading frequency:",
+                options: [
+                    { text: "Many trades" },
+                    { text: "1-3 trades / day" },
+                    { text: "A few trades weekly" }
+                ]
+            },
+            {
+                id: 5,
+                text: "What do you want to fix first?",
+                options: [
+                    { text: "Stop bleeding" },
+                    { text: "Achieve consistency" },
+                    { text: "Match strategy to market" }
+                ]
+            }
+        ];
+
+        let currentStep = 0;
+        let answers = {};
+        const overlay = document.getElementById('diagnosis-overlay');
+        const container = document.getElementById('diagnosis-container');
+        const bar = document.getElementById('diagnosis-bar');
+
+        function openDiagnosis() {
+            currentStep = 0;
+            answers = {};
+            overlay.classList.add('active');
+            renderStep();
+        }
+
+        function closeDiagnosis() {
+            overlay.classList.remove('active');
+        }
+
+        function handleAnswer(stepIndex, value, type) {
+            answers[stepIndex] = { value, type }; // Store answer
+            if (type) answers.mainType = type; // Capture the archetype from Q2 specifically
+
+            if (stepIndex < questions.length - 1) {
+                currentStep++;
+                renderStep();
+            } else {
+                startAnalysis();
+            }
+        }
+
+        function startAnalysis() {
+            // Hide progress bar for immersion
+            document.querySelector('.diagnosis-progress').style.opacity = '0';
+            
+            container.innerHTML = `
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 0; animation: fadeIn 0.5s;">
+                    <div class="luna-orb" style="width: 100px; height: 100px; margin-bottom: 30px; box-shadow: 0 0 50px rgba(56, 189, 248, 0.4);">
+                        <div class="luna-ring" style="width: 140%; height: 140%; top: -20%; left: -20%; border-color: rgba(56, 189, 248, 0.3); animation: orbit 2s linear infinite;"></div>
+                        <div class="luna-ring" style="width: 180%; height: 180%; top: -40%; left: -40%; border-color: rgba(139, 92, 246, 0.2); animation: orbit-reverse 4s linear infinite;"></div>
+                    </div>
+                    <div style="font-family: 'Space Grotesk'; font-size: 1.4rem; font-weight: 700; margin-bottom: 12px; color: white;">Luna Is Thinking...</div>
+                    <div id="ai-status" style="color: var(--luna-primary); font-family: monospace; font-size: 0.9rem; min-height: 20px; transition: opacity 0.2s;">Connecting to neural core...</div>
+                </div>
+            `;
+            
+            const steps = [
+                "Scanning behavioral patterns...",
+                "Detecting emotional leaks...",
+                "Calibrating risk profile...",
+                "Generating 72h Fix Plan..."
+            ];
+            
+            let i = 0;
+            
+            const interval = setInterval(() => {
+                if(i < steps.length) {
+                    const statusEl = document.getElementById('ai-status');
+                    if(statusEl) {
+                        statusEl.style.opacity = 0;
+                        setTimeout(() => {
+                            statusEl.innerText = steps[i];
+                            statusEl.style.opacity = 1;
+                        }, 200);
+                    }
+                    i++;
+                } else {
+                    clearInterval(interval);
+                    showResults();
+                }
+            }, 1000);
+        }
+
+        function renderStep() {
+            const q = questions[currentStep];
+            const progress = ((currentStep + 1) / questions.length) * 100;
+            bar.style.width = `${progress}%`;
+
+            let html = `
+                <div class="diagnosis-step active">
+                    <div class="diagnosis-question">${q.text}</div>
+                    <div class="diagnosis-options">
+            `;
+
+            q.options.forEach(opt => {
+                html += `
+                    <div class="diagnosis-option" onclick="handleAnswer(${currentStep}, '${opt.score || ''}', '${opt.type || ''}')">
+                        <div style="width: 20px; height: 20px; border: 1px solid var(--text-muted); border-radius: 50%;"></div>
+                        <span>${opt.text}</span>
+                    </div>
+                `;
+            });
+
+            html += `</div></div>`;
+            container.innerHTML = html;
+        }
+
+        function showResults() {
+            // Restore progress bar
+            document.querySelector('.diagnosis-progress').style.opacity = '1';
+            bar.style.width = '100%';
+            
+            // Logic for Persona
+            let persona = "The Aspiring Pro";
+            let leak = "Inconsistent Execution";
+            let plan = [
+                "Define a rigid Pre-Trade Checklist",
+                "Set a Hard Stop Loss for the day",
+                "Review yesterday's deviations"
+            ];
+
+            const type = answers.mainType; // From Q1
+
+            if (type === 'impulsive' || type === 'fomo') {
+                persona = "The Gunslinger";
+                leak = "Information Overload & FOMO";
+                plan = [
+                    "Limit trading to specific 'Event Windows'",
+                    "Force a 30-second 'Cool-off' before clicking buy",
+                    "Restrict yourself to 1 setup (Blueprint) only"
+                ];
+            } else if (type === 'tilt') {
+                persona = "The Gladiator";
+                leak = "Emotional Tilt & Revenge Trading";
+                plan = [
+                    "Activate RiskGuard 'Stop Mode' immediately",
+                    "Walk away after 2 consecutive losses",
+                    "Switch to 'Defensive Mode' for 1 week"
+                ];
+            } else if (type === 'fear') {
+                persona = "The Guardian";
+                leak = "Fear of Realizing Loss";
+                plan = [
+                    "Set automatic Hard Stop on entry",
+                    "Reduce position size to lower emotional attachment",
+                    "Practice taking small losses intentionally"
+                ];
+            }
+
+            const html = `
+                <div class="diagnosis-result animation-fade-up">
+                    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 30px; padding: 16px; background: rgba(56, 189, 248, 0.05); border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.1);">
+                        <div class="luna-orb" style="width: 48px; height: 48px; box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);"></div>
+                        <div style="text-align: left;">
+                            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">AI Analysis Complete</div>
+                            <div style="font-size: 0.95rem; color: var(--luna-primary);">Here is your personalized roadmap.</div>
+                        </div>
+                    </div>
+
+                    <div class="persona-badge">Your Trading Persona</div>
+                    <div class="persona-title">${persona}</div>
+                    
+                    <div class="diagnosis-leak">
+                        <strong>⚠️ Critical Leak Detected:</strong><br>
+                        ${leak}
+                    </div>
+
+                    <div class="fix-plan">
+                        <h4 style="margin-bottom: 16px;">Your 72h Fix Plan:</h4>
+                        ${plan.map((step, i) => `
+                            <div class="fix-step">
+                                <div class="fix-num">${i+1}</div>
+                                <div>${step}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <button class="btn btn-luna" style="width: 100%;" onclick="window.location.href='index.html'">
+                        Start Your Fix Plan Now
+                    </button>
+                    <div style="text-align: center; margin-top: 16px;">
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Includes 30-day trial of RiskGuard</span>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+
+        // Close on outside click
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) closeDiagnosis();
+        });
+
     </script>
 
 </body>
